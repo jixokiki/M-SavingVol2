@@ -2,6 +2,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import {auth, db} from "@/firebase/firebase.js";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -47,7 +50,7 @@ const Signup = () => {
     }
 
     let selectedBank = [];
-    switch (bank){
+    switch (bank) {
       case "BCA":
         selectedBank.push({ name: "BCA" });
         break;
@@ -70,16 +73,40 @@ const Signup = () => {
         break;
     }
 
+    const res = await createUserWithEmailAndPassword(auth, email, password)
+     
 
+    // Add a new document in collection "cities"
+    await setDoc(doc(db, "users", res.user.uid), {
+      username : username,
+      fullname : fullname,
+      email : email,
+      password : password,
+      jangka : jangka,
+      bank : bank,
+      noRek : noRek,
+      nameRek : nameRek,
+      balance: 0,
+    });
     // Implement your sign-up logic here
     // For simplicity, let's just add the new user to the JSON Server
-    await fetch("http://localhost:3001/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, fullname, email, password, jangka, bank, noRek, nameRek, balance: 0 }),
-    });
+    // await fetch("http://localhost:3001/users", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     username,
+    //     fullname,
+    //     email,
+    //     password,
+    //     jangka,
+    //     bank,
+    //     noRek,
+    //     nameRek,
+    //     balance: 0,
+    //   }),
+    // });
 
     // After signing up, you can redirect to the sign-in page or any other page
     router.push("/sign-in");
@@ -188,7 +215,7 @@ const Signup = () => {
               </select>
             </div>
           </div> */}
-                {/* Jangka Waktu Menabung */}
+      {/* Jangka Waktu Menabung */}
       <div className="flex flex-col my-3">
         <label htmlFor="jangka" className="text-center">
           Jangka Waktu Menabung :

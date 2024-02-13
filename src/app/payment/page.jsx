@@ -3,9 +3,11 @@ import { useAuth } from "@/context/AuthContext";
 import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { formatRupiah } from "../utility/formatRupiah";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "@/firebase/firebase";
 
 const Payment = () => {
-  const { user } = useAuth();
+  const { user, userProfile, setUserProfile } = useAuth();
   const [isLoading, setIsloading] = useState(false);
 
   useEffect(() => {
@@ -28,12 +30,12 @@ const Payment = () => {
     const data = {
       id:
         "MS-" +
-        user.id +
+        user.uid +
         Math.floor(Math.random() * (1000000 - 100000 + 1)) +
         100000,
-      username: user.username,
-      fullname: user.fullname,
-      email: user.email,
+      username: userProfile.username,
+      fullname: userProfile.fullname,
+      email: userProfile.email,
       amount: amount,
     };
 
@@ -45,37 +47,15 @@ const Payment = () => {
     const requestData = await response.json();
     window.snap.pay(requestData.token, {
       onSuccess: function (result) {
-        const updatedBalance = user.balance + amount;
-        updateUserBalance(updatedBalance);
       },
     });
     setIsloading(false);
-  };
-
-  const updateUserBalance = async (newBalance) => {
-    const updatedUser = { ...user, balance: newBalance };
-
-    try {
-      const response = await fetch(`http://localhost:3001/users/${user.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedUser),
-      });
-
-      if (response.ok) {
-        // Update the user context or trigger a re-fetch of user data
-        const updatedUserData = { ...user, balance: newBalance };
-        localStorage.setItem("user", JSON.stringify(updatedUserData));
-
-        console.log("User balance updated successfully");
-      } else {
-        console.error("Failed to update user balance on the server");
-      }
-    } catch (error) {
-      console.error("Error updating user balance:", error);
-    }
+    const userRef = doc(db, "users", user.uid);
+    await updateDoc(userRef, {
+      balance: userProfile.balance + amount,
+    });
+    const updatedUser = { ...userProfile, balance: userProfile.balance + amount };
+    setUserProfile(updatedUser)
   };
 
   return (
@@ -88,16 +68,16 @@ const Payment = () => {
         <>
           <h1 className="text-2xl font-semibold mb-6">Nama Akun</h1>
           <p className="uppercase text-xl font-bold mb-6 text-gray-800">
-            {user ? user.fullname : ""}
+            {userProfile ? userProfile.fullname : ""}
           </p>
           <h1 className="text-2xl font-semibold mb-6">Jangka Waktu</h1>
           <p className="uppercase text-xl font-bold mb-6 text-gray-800">
-            {user ? user.jangka : ""}
+            {userProfile ? userProfile.jangka : ""}
           </p>
           <h2 className="text-2xl font-semibold mb-6 ">Saldo </h2>
           <div className="bg-gradient-to-r from-teal-500 to-teal-600 p-6 md:p-10 rounded-2xl text-white">
             <p className="text-3xl md:text-6xl">
-              {user ? formatRupiah(user.balance) : "0"}
+              {userProfile ? formatRupiah(userProfile.balance) : "0"}
             </p>
           </div>
           {/* <h1 className="text-2xl font-semibold my-10 ">Rencana Tabungan</h1>
