@@ -1,0 +1,83 @@
+{
+  "users": [
+    {
+      "id": "fd10",
+      "username": "Dimas",
+      "fullname": "Dimas Arvianto",
+      "email": "dimas@gmail.com",
+      "password": "12345",
+      "balance": 0
+    },
+    {
+      "id": "406e",
+      "username": "Iki",
+      "fullname": "Rizki Maulana",
+      "email": "iki@gmail.com",
+      "password": "12345",
+      "balance": 3500000
+    },
+    {
+      "id": "3526",
+      "username": "Arvianto",
+      "fullname": "Prasetya Dimas Arvianto",
+      "email": "dimasarvianto23@gmail.com",
+      "password": "dimas123",
+      "balance": 1300000
+    },
+    {
+      "id": "8322",
+      "username": "Iki",
+      "fullname": "Rizki",
+      "email": "iki@gmail.com",
+      "password": "123",
+      "jangka": [
+        {
+          "name": "3 Tahun"
+        }
+      ],
+      "balance": 0
+    },
+    {
+      "id": "a694",
+      "username": "KIKI",
+      "fullname": "KIKI",
+      "email": "KIKI@gmail.com",
+      "password": "123",
+      "jangka": "2 Tahun",
+      "balance": 0
+    },
+    {
+      "id": "4f26",
+      "username": "arviarvi1",
+      "fullname": "Tio Tio",
+      "email": "tiotio2@gmail.com",
+      "password": "tio123",
+      "jangka": "6 Bulan",
+      "balance": 0
+    },
+    {
+      "id": "8b23",
+      "username": "upilkuupilmu",
+      "fullname": "Cinta Laura",
+      "email": "upilupil@gmail.com",
+      "password": "laura123",
+      "jangka": "5 Tahun",
+      "bank": "CIMB NIAGA",
+      "noRek": "988211445223",
+      "nameRek": "Cinta Laura",
+      "balance": 0
+    },
+    {
+      "id": "fa4d",
+      "username": "Farel",
+      "fullname": "FarelYU",
+      "email": "farel@gmail.com",
+      "password": "12345",
+      "jangka": "5 Tahun",
+      "bank": "BCA",
+      "noRek": "7769876708707",
+      "nameRek": "farel",
+      "balance": 0
+    }
+  ]
+}
