@@ -34,10 +34,10 @@ const Signup = () => {
 
     emailjs
       .sendForm(
-        "service_ocmp97v",
-        "template_maz7s24",
+        "service_gbjvy6a",
+        "template_cadohkk",
         form.current,
-        "5zCg9M6Gbc0oFFgN4"
+        "kcA2GGiK48cyi4fvx"
       )
       .then(
         (result) => {
