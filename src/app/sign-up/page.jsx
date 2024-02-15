@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import {auth, db} from "@/firebase/firebase.js";
+import { auth, db } from "@/firebase/firebase.js";
+import emailjs from "@emailjs/browser";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -23,8 +24,33 @@ const Signup = () => {
   const [nameRek, setNameRek] = useState("");
   const router = useRouter();
 
+  // const [isLoading, setIsloading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const form = useRef();
+
   const handleSignUp = async () => {
     let selectedJangka = [];
+    // setIsLoading(true);
+
+    emailjs
+      .sendForm(
+        "service_ocmp97v",
+        "template_maz7s24",
+        form.current,
+        "5zCg9M6Gbc0oFFgN4"
+      )
+      .then(
+        (result) => {
+          console.log(result.text);
+          setIsSuccess(true);
+        },
+        (error) => {
+          console.log(error.text);
+        }
+      )
+      .finally(() => {
+        setIsLoading(false);
+      });
     // Menyimpan hanya jangka waktu yang dipilih oleh pengguna
     switch (jangka) {
       case "5 Tahun":
@@ -73,19 +99,18 @@ const Signup = () => {
         break;
     }
 
-    const res = await createUserWithEmailAndPassword(auth, email, password)
-     
+    const res = await createUserWithEmailAndPassword(auth, email, password);
 
     // Add a new document in collection "cities"
     await setDoc(doc(db, "users", res.user.uid), {
-      username : username,
-      fullname : fullname,
-      email : email,
-      password : password,
-      jangka : jangka,
-      bank : bank,
-      noRek : noRek,
-      nameRek : nameRek,
+      username: username,
+      fullname: fullname,
+      email: email,
+      password: password,
+      jangka: jangka,
+      bank: bank,
+      noRek: noRek,
+      nameRek: nameRek,
       balance: 0,
     });
     // Implement your sign-up logic here
@@ -115,51 +140,55 @@ const Signup = () => {
   return (
     <div className="max-w-xl mx-auto p-6 bg-white md:border rounded-md md:shadow-md">
       <h2 className="text-2xl font-semibold mb-6">Sign Up</h2>
-      <label className="block mb-4">
-        Username:
-        <div className="p-3 border rounded my-3">
-          <input
-            type="text"
-            className="form-input mt-1 block w-full rounded-md outline-none border-none"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-      </label>
-      <label className="block mb-4">
-        Fullname:
-        <div className="p-3 border rounded my-3">
-          <input
-            type="text"
-            className="form-input mt-1 block w-full rounded-md outline-none border-none"
-            value={fullname}
-            onChange={(e) => setFullname(e.target.value)}
-          />
-        </div>
-      </label>
-      <label className="block mb-4">
-        Email:
-        <div className="p-3 border rounded my-3">
-          <input
-            type="email"
-            className="form-input mt-1 block w-full rounded-md outline-none border-none"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-      </label>
-      <label className="block mb-4">
-        Password:
-        <div className="p-3 border rounded my-3">
-          <input
-            type="password"
-            className="form-input mt-1 block w-full rounded-md outline-none border-none"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-      </label>
-      {/* <div className="flex flex-col my-3">
+      <form ref={form} onSubmit={handleSignUp}>
+        <label className="block mb-4">
+          Username:
+          <div className="p-3 border rounded my-3">
+            <input
+              type="text"
+              className="form-input mt-1 block w-full rounded-md outline-none border-none"
+              name="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+        </label>
+        <label className="block mb-4">
+          Fullname:
+          <div className="p-3 border rounded my-3">
+            <input
+              type="text"
+              name="fullname"
+              className="form-input mt-1 block w-full rounded-md outline-none border-none"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
+            />
+          </div>
+        </label>
+        <label className="block mb-4">
+          Email:
+          <div className="p-3 border rounded my-3">
+            <input
+              type="email"
+              name="email"
+              className="form-input mt-1 block w-full rounded-md outline-none border-none"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+        </label>
+        <label className="block mb-4">
+          Password:
+          <div className="p-3 border rounded my-3">
+            <input
+              type="password"
+              className="form-input mt-1 block w-full rounded-md outline-none border-none"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+        </label>
+        {/* <div className="flex flex-col my-3">
             <label htmlFor="messageType" className="text-center">
               Jangka Waktu Menabung :
             </label>
@@ -215,69 +244,71 @@ const Signup = () => {
               </select>
             </div>
           </div> */}
-      {/* Jangka Waktu Menabung */}
-      <div className="flex flex-col my-3">
-        <label htmlFor="jangka" className="text-center">
-          Jangka Waktu Menabung :
+        {/* Jangka Waktu Menabung */}
+        <div className="flex flex-col my-3">
+          <label htmlFor="jangka" className="text-center">
+            Jangka Waktu Menabung :
+          </label>
+          <div className="border-2 p-3 bg-white rounded">
+            <select
+              id="jangka"
+              value={jangka}
+              name="amount"
+              onChange={(e) => setJangka(e.target.value)}
+              className="w-full outline-none border-none"
+            >
+              <option value="5 Tahun">5 Tahun</option>
+              <option value="4 Tahun">4 Tahun</option>
+              <option value="3 Tahun">3 Tahun</option>
+              <option value="2 Tahun">2 Tahun</option>
+              <option value="1 Tahun">1 Tahun</option>
+              <option value="6 Bulan">6 Bulan</option>
+            </select>
+          </div>
+        </div>
+        <div className="flex flex-col my-3">
+          <label htmlFor="bank" className="text-center">
+            Jenis Bank :
+          </label>
+          <div className="border-2 p-3 bg-white rounded">
+            <select
+              id="bank"
+              value={bank}
+              onChange={(e) => setBank(e.target.value)}
+              className="w-full outline-none border-none"
+            >
+              <option value="BCA">BCA</option>
+              <option value="BRI">BRI</option>
+              <option value="BNI">BNI</option>
+              <option value="PERMATA">PERMATA</option>
+              <option value="CIMB NIAGA">CIMB NIAGA</option>
+              <option value="MANDIRI">MANDIRI</option>
+            </select>
+          </div>
+        </div>
+        <label className="block mb-4">
+          No Rekening :
+          <div className="p-3 border rounded my-3">
+            <input
+              type="text"
+              className="form-input mt-1 block w-full rounded-md outline-none border-none"
+              value={noRek}
+              onChange={(e) => setRek(e.target.value)}
+            />
+          </div>
         </label>
-        <div className="border-2 p-3 bg-white rounded">
-          <select
-            id="jangka"
-            value={jangka}
-            onChange={(e) => setJangka(e.target.value)}
-            className="w-full outline-none border-none"
-          >
-            <option value="5 Tahun">5 Tahun</option>
-            <option value="4 Tahun">4 Tahun</option>
-            <option value="3 Tahun">3 Tahun</option>
-            <option value="2 Tahun">2 Tahun</option>
-            <option value="1 Tahun">1 Tahun</option>
-            <option value="6 Bulan">6 Bulan</option>
-          </select>
-        </div>
-      </div>
-      <div className="flex flex-col my-3">
-        <label htmlFor="bank" className="text-center">
-          Jenis Bank :
+        <label className="block mb-4">
+          Name Rekening:
+          <div className="p-3 border rounded my-3">
+            <input
+              type="text"
+              className="form-input mt-1 block w-full rounded-md outline-none border-none"
+              value={nameRek}
+              onChange={(e) => setNameRek(e.target.value)}
+            />
+          </div>
         </label>
-        <div className="border-2 p-3 bg-white rounded">
-          <select
-            id="bank"
-            value={bank}
-            onChange={(e) => setBank(e.target.value)}
-            className="w-full outline-none border-none"
-          >
-            <option value="BCA">BCA</option>
-            <option value="BRI">BRI</option>
-            <option value="BNI">BNI</option>
-            <option value="PERMATA">PERMATA</option>
-            <option value="CIMB NIAGA">CIMB NIAGA</option>
-            <option value="MANDIRI">MANDIRI</option>
-          </select>
-        </div>
-      </div>
-      <label className="block mb-4">
-        No Rekening :
-        <div className="p-3 border rounded my-3">
-          <input
-            type="text"
-            className="form-input mt-1 block w-full rounded-md outline-none border-none"
-            value={noRek}
-            onChange={(e) => setRek(e.target.value)}
-          />
-        </div>
-      </label>
-      <label className="block mb-4">
-        Name Rekening:
-        <div className="p-3 border rounded my-3">
-          <input
-            type="text"
-            className="form-input mt-1 block w-full rounded-md outline-none border-none"
-            value={nameRek}
-            onChange={(e) => setNameRek(e.target.value)}
-          />
-        </div>
-      </label>
+      </form>
       <button
         className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700"
         onClick={handleSignUp}
